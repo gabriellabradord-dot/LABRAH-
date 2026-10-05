@@ -4,7 +4,7 @@ Esta carpeta es independiente y puede publicarse en GitHub Pages. No ejecuta Nod
 
 ## Configurar la URL de la API
 
-`js/config.js` apunta a `http://localhost:3000` desde localhost y a `https://labrah-backend.onrender.com` desde un dominio público. El flujo del repositorio `.github/workflows/deploy-pages.yml` inyecta el valor real al publicar; si Render entrega otro dominio, define la variable de repositorio `LABRAH_API_URL` en GitHub Actions.
+`js/config.js` apunta a `http://localhost:3000` desde localhost y a `https://labrah-backend-gabriel.onrender.com` desde un dominio público. El flujo del repositorio `.github/workflows/deploy-pages.yml` inyecta el valor real al publicar; si Render entrega otro dominio, define la variable de repositorio `LABRAH_API_URL` en GitHub Actions.
 
 ## Publicar en GitHub Pages
 

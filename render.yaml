@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: labrah-backend
+    name: labrah-backend-gabriel
     runtime: node
     rootDir: backend
     buildCommand: npm install
