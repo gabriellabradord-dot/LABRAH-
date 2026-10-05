@@ -144,12 +144,31 @@ const schemaPostgres = `
   CREATE INDEX IF NOT EXISTS idx_order_items_product_id ON order_items(product_id);
 `;
 
-function addTransactionColumn(name) {
+// ✅ CORREGIDO: Verifica si la columna ya existe antes de intentar crearla.
+async function addTransactionColumn(name) {
   const definition = `${name} TEXT NOT NULL DEFAULT ''`;
-  if (usePostgres) return pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS ${name} ${definition}`);
+  
+  if (usePostgres) {
+    // Verificar si la columna ya existe en PostgreSQL
+    const checkQuery = `
+      SELECT column_name 
+      FROM information_schema.columns 
+      WHERE table_name = 'orders' AND column_name = $1
+    `;
+    const result = await pool.query(checkQuery, [name]);
+    
+    // Si no existe, agregarla
+    if (result.rows.length === 0) {
+      await pool.query(`ALTER TABLE orders ADD COLUMN ${name} ${definition}`);
+    }
+    return;
+  }
+  
+  // Lógica para SQLite
   const columns = sqlite.prepare('PRAGMA table_info(orders)').all();
-  if (!columns.some((column) => column.name === name)) sqlite.exec(`ALTER TABLE orders ADD COLUMN ${name} ${definition}`);
-  return Promise.resolve();
+  if (!columns.some((column) => column.name === name)) {
+    sqlite.exec(`ALTER TABLE orders ADD COLUMN ${name} ${definition}`);
+  }
 }
 
 export async function initializeDatabase(hashPassword) {
