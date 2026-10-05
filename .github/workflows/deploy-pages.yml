@@ -32,7 +32,7 @@ jobs:
 
       - name: Preparar el sitio y apuntarlo a la API publicada
         env:
-          LABRAH_API_URL: ${{ vars.LABRAH_API_URL }}
+          LABRAH_API_URL: https://labrah-backend.onrender.com
         run: |
           node --input-type=module <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
@@ -40,7 +40,7 @@ jobs:
           import { readdir } from 'node:fs/promises';
 
           const root = 'frontend';
-          const apiUrl = (process.env.LABRAH_API_URL || 'https://labrah-backend-gabriel.onrender.com').replace(/\/$/, '');
+          const apiUrl = (process.env.LABRAH_API_URL || 'https://labrah-backend.onrender.com').replace(/\/$/, '');
           async function inject(directory) {
             for (const entry of await readdir(directory, { withFileTypes: true })) {
               const file = path.join(directory, entry.name);
