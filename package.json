@@ -1,0 +1,21 @@
+{
+  "name": "labrah-and",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LABRAH& — frontend estático y API desacoplada con SQLite o PostgreSQL",
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev",
+    "frontend": "python3 -m http.server 4173 --directory frontend",
+    "install:backend": "npm install --prefix backend",
+    "check": "npm --prefix backend run check && node --check frontend/js/app.js && node --check frontend/js/config.js && node --check frontend/js/auth.js && node --check frontend/js/camera.js && node --check frontend/js/audio.js"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

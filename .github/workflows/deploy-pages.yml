@@ -1,0 +1,71 @@
+name: Publicar sitio LABRAH& en GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    environment:
+      name: github-pages
+      url: ${{ steps.publicar.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener el repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar el sitio y apuntarlo a la API publicada
+        env:
+          LABRAH_API_URL: ${{ vars.LABRAH_API_URL }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import path from 'node:path';
+          import { readdir } from 'node:fs/promises';
+
+          const root = 'frontend';
+          const apiUrl = (process.env.LABRAH_API_URL || 'https://labrah-backend.onrender.com').replace(/\/$/, '');
+          async function inject(directory) {
+            for (const entry of await readdir(directory, { withFileTypes: true })) {
+              const file = path.join(directory, entry.name);
+              if (entry.isDirectory()) {
+                await inject(file);
+              } else if (entry.isFile() && entry.name.endsWith('.html')) {
+                const html = await readFile(file, 'utf8');
+                const marker = '<script type="module" src="js/app.js"></script>';
+                if (html.includes(marker) && !html.includes('window.LABRAH_API_URL=')) {
+                  const script = `<script>window.LABRAH_API_URL=${JSON.stringify(apiUrl)};</script>${marker}`;
+                  await writeFile(file, html.replace(marker, script));
+                }
+              }
+            }
+          }
+          await inject(root);
+          await writeFile(path.join(root, '.nojekyll'), '');
+          console.log(`Frontend configurado para la API: ${apiUrl}`);
+          NODE
+
+      - name: Cargar archivos estáticos
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend
+
+      - name: Publicar GitHub Pages
+        id: publicar
+        uses: actions/deploy-pages@v4

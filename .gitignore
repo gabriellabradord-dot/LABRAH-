@@ -1,0 +1,15 @@
+node_modules/
+.env
+.DS_Store
+/.aider.chat.history.md
+/.aider.input.history
+/node-1/
+/public/
+/server.js
+/styles.css
+/db/
+backend/node_modules/
+frontend/node_modules/
+backend/*.sqlite
+backend/*.sqlite-shm
+backend/*.sqlite-wal
